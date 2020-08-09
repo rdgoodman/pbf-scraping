@@ -2,6 +2,7 @@ import PyPDF2
 import pprint as pp
 import re
 
+
 def scrape_pdf(filename):
     """
     Scrapes the PDF
@@ -27,10 +28,11 @@ def scrape_pdf(filename):
             text = text
         # use OCR to pull text if none was returned
         else:
-            text = textract.process(f, method='tesseract', language='eng')
+            text = textract.process(filename, method='tesseract', language='eng')
     # clean based on some basic rules
     text = clean_text(text)
     return text
+
 
 def clean_text(txt):
     """
@@ -57,6 +59,7 @@ def clean_text(txt):
         txt = re.sub(pattern, '', txt)
     return txt
 
+
 def parse_pdf(text):
     """
     Parses specific elements from the string
@@ -70,7 +73,6 @@ def parse_pdf(text):
     Returns:
     result: a dictionary of specific elements
     """
-    import re
     # initialize result as an empty dictionary
     result = {}
     # Set RegEx patterns to first break the document into sections
@@ -129,8 +131,9 @@ def parse_pdf(text):
     pattern_bailset = r"\s\d{2}\/\d{2}\/\d{5}(.*)Bail Set"
     result['bail_set_by'] = re.findall(pattern_bailset, sections['entries'], re.DOTALL)[0]
     ## Preliminary Details ###
-    pattern_prelim = r"(?<=Calendar Event Type )(.*?)(?=Scheduled)"
+    pattern_prelim = r"(?<=Arraignment)(.*?)(?=Judge)"
     prelim = re.findall(pattern_prelim, sections['calendar'], re.DOTALL)
+    print(sections['calendar'])
     result['prelim_hearing_dt'] = re.findall(r"\d{2}\/\d{2}\/\d{4}", str(prelim))[0]
     result['prelim_hearing_time'] = re.findall(r"((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))", str(prelim))[0][0]
     ###  Uncomment to print a section during development
@@ -143,3 +146,4 @@ def parse_pdf(text):
 filename = 'test_pdfs/example02.pdf'
 s = parse_pdf(scrape_pdf(filename))
 pp.pprint(s)
+exit(0)
