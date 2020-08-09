@@ -1,4 +1,5 @@
 import PyPDF2
+import pprint as pp
 import re
 
 def scrape_pdf(filename):
@@ -141,4 +142,4 @@ def parse_pdf(text):
 ################### TESTING ########################
 filename = 'test_pdfs/example02.pdf'
 s = parse_pdf(scrape_pdf(filename))
-print(s)
+pp.pprint(s)
